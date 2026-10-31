@@ -1,24 +1,26 @@
 {
-  "id": "./",
+  "id": "/SkyWeahter/",
   "name": "SkyWeather",
   "short_name": "SkyWeather",
   "description": "Прогноз погоды",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/SkyWeahter/",
+  "scope": "/SkyWeahter/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#6757e8",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/SkyWeahter/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "/SkyWeahter/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
