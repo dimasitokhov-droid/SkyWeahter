@@ -39,7 +39,9 @@
                 <p id="currentDate" class="text-sm text-gray-200 mt-1"></p>
                 
                 <div class="my-6">
-                    <img id="weatherIcon" src="https://openweathermap.org/img/wn/10d@4x.png" alt="Weather" class="w-32 h-32 mx-auto drop-shadow-lg">
+                    <div id="weatherIcon" class="text-7xl mx-auto drop-shadow-lg mb-2 text-yellow-300">
+                        <i class="fa-solid fa-sun"></i>
+                    </div>
                     <div class="text-6xl font-extrabold tracking-tighter mt-2"><span id="temp">--</span>°C</div>
                     <p id="weatherDesc" class="text-lg font-medium capitalize mt-1 text-gray-100">Загрузка данных...</p>
                 </div>
@@ -95,38 +97,35 @@
         const searchInput = document.getElementById('citySearch');
         const suggestionsBox = document.getElementById('suggestions');
 
+        // Преобразование кодов Open-Meteo в описания и иконки FontAwesome
         function getWeatherInfo(code) {
             const map = {
-                0: { desc: 'Ясно', icon: '01d' },
-                1: { desc: 'В основном ясно', icon: '02d' },
-                2: { desc: 'Переменная облачность', icon: '03d' },
-                3: { desc: 'Пасмурно', icon: '04d' },
-                45: { desc: 'Туман', icon: '50d' },
-                48: { desc: 'Изморось', icon: '50d' },
-                51: { desc: 'Небольшой моросящий дождь', icon: '09d' },
-                53: { desc: 'Моросящий дождь', icon: '09d' },
-                55: { desc: 'Плотный моросящий дождь', icon: '09d' },
-                61: { desc: 'Небольшой дождь', icon: '10d' },
-                63: { desc: 'Дождь', icon: '10d' },
-                65: { desc: 'Сильный дождь', icon: '10d' },
-                71: { desc: 'Небольшой снег', icon: '13d' },
-                73: { desc: 'Снег', icon: '13d' },
-                75: { desc: 'Сильный снег', icon: '13d' },
-                95: { desc: 'Гроза', icon: '11d' }
+                0: { desc: 'Ясно', icon: 'fa-sun text-yellow-300' },
+                1: { desc: 'В основном ясно', icon: 'fa-cloud-sun text-yellow-200' },
+                2: { desc: 'Переменная облачность', icon: 'fa-cloud-sun text-gray-200' },
+                3: { desc: 'Пасмурно', icon: 'fa-cloud text-gray-300' },
+                45: { desc: 'Туман', icon: 'fa-smog text-gray-300' },
+                48: { desc: 'Изморось', icon: 'fa-smog text-gray-300' },
+                51: { desc: 'Небольшой моросящий дождь', icon: 'fa-cloud-rain text-blue-300' },
+                53: { desc: 'Моросящий дождь', icon: 'fa-cloud-rain text-blue-300' },
+                55: { desc: 'Плотный моросящий дождь', icon: 'fa-cloud-showers-heavy text-blue-400' },
+                61: { desc: 'Небольшой дождь', icon: 'fa-cloud-rain text-blue-300' },
+                63: { desc: 'Дождь', icon: 'fa-cloud-rain text-blue-400' },
+                65: { desc: 'Сильный дождь', icon: 'fa-cloud-showers-heavy text-blue-500' },
+                71: { desc: 'Небольшой снег', icon: 'fa-snowflake text-blue-200' },
+                73: { desc: 'Снег', icon: 'fa-snowflake text-blue-200' },
+                75: { desc: 'Сильный снег', icon: 'fa-snowflake text-blue-100' },
+                95: { desc: 'Гроза', icon: 'fa-bolt text-yellow-400' }
             };
-            return map[code] || { desc: 'Облачно', icon: '03d' };
+            return map[code] || { desc: 'Облачно', icon: 'fa-cloud text-gray-300' };
         }
 
-        // Функция fetch с таймаутом (6 секунд)
         async function fetchWithTimeout(resource, options = {}) {
             const { timeout = 6000 } = options;
             const controller = new AbortController();
             const id = setTimeout(() => controller.abort(), timeout);
             try {
-                const response = await fetch(resource, {
-                    ...options,
-                    signal: controller.signal
-                });
+                const response = await fetch(resource, { ...options, signal: controller.signal });
                 clearTimeout(id);
                 return response;
             } catch (error) {
@@ -188,7 +187,7 @@
                 document.getElementById('temp').innerText = Math.round(cur.temperature_2m);
                 const info = getWeatherInfo(cur.weather_code);
                 document.getElementById('weatherDesc').innerText = info.desc;
-                document.getElementById('weatherIcon').src = `https://openweathermap.org/img/wn/${info.icon}@4x.png`;
+                document.getElementById('weatherIcon').innerHTML = `<i class="fa-solid ${info.icon}"></i>`;
                 document.getElementById('windSpeed').innerText = `${Math.round(cur.wind_speed_10m)} км/ч`;
                 document.getElementById('humidity').innerText = `${cur.relative_humidity_2m}%`;
                 document.getElementById('pressure').innerText = `${Math.round(cur.surface_pressure * 0.750062)} мм`;
@@ -208,7 +207,7 @@
                     hourlyContainer.innerHTML += `
                         <div class="flex flex-col items-center justify-between bg-white/5 p-3 rounded-2xl min-w-[70px] shrink-0">
                             <span class="text-xs text-gray-300">${timeStr}</span>
-                            <img src="https://openweathermap.org/img/wn/${hInfo.icon}@2x.png" class="w-10 h-10 my-1">
+                            <i class="fa-solid ${hInfo.icon} text-xl my-2"></i>
                             <span class="font-bold text-sm">${hTemp}°</span>
                         </div>
                     `;
@@ -228,7 +227,7 @@
                         <div class="flex items-center justify-between bg-white/5 px-4 py-2.5 rounded-2xl">
                             <span class="w-24 font-medium text-sm capitalize">${dayName}</span>
                             <div class="flex items-center gap-2">
-                                <img src="https://openweathermap.org/img/wn/${dInfo.icon}@2x.png" class="w-8 h-8">
+                                <i class="fa-solid ${dInfo.icon} text-lg w-6 text-center"></i>
                                 <span class="text-xs text-gray-300">${dInfo.desc}</span>
                             </div>
                             <div class="flex gap-2 text-sm font-semibold">
@@ -242,7 +241,6 @@
             } catch (err) {
                 console.error('Ошибка загрузки данных погоды', err);
                 document.getElementById('weatherDesc').innerText = 'Нет связи с сервером погоды';
-                document.getElementById('hourlyContainer.innerHTML') = '';
             }
         }
 
