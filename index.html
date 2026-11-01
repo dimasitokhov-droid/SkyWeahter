@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#6757e8">    <meta charset="UTF-8">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#6757e8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Погодное приложение</title>
     <!-- Tailwind CSS -->
@@ -18,22 +19,27 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        /* Скрытие скроллбара для красивого вида */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-600 via-indigo-700 to-slate-900 min-h-screen text-white p-4 sm:p-6 flex flex-col items-center justify-between">
+<body class="bg-gradient-to-br from-blue-600 via-indigo-700 to-slate-900 min-h-screen text-white p-4 sm:p-8 flex flex-col justify-between">
 
-    <div class="w-full max-w-md mx-auto flex flex-col gap-6">
-        <!-- Поиск -->
-        <div class="relative">
-            <input type="text" id="citySearch" placeholder="Введите город (например, Москва)..." 
-                class="w-full py-3 px-4 pl-12 rounded-2xl glass text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white/50 transition shadow-lg">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-4 text-gray-300 text-lg"></i>
-            <div id="suggestions" class="absolute left-0 right-0 mt-2 glass rounded-2xl overflow-hidden hidden z-50 shadow-xl divide-y divide-white/10"></div>
-        </div>
+    <!-- Главный контейнер: на ПК горизонтально (lg:flex-row), на телефоне вертикально -->
+    <div class="w-full max-w-5xl mx-auto my-auto flex flex-col lg:flex-row gap-6 items-start">
+        
+        <!-- Левая колонка: Поиск + Текущая погода -->
+        <div class="w-full lg:w-96 flex flex-col gap-6 shrink-0">
+            <!-- Поиск -->
+            <div class="relative">
+                <input type="text" id="citySearch" placeholder="Введите город (например, Москва)..." 
+                    class="w-full py-3.5 px-4 pl-12 rounded-2xl glass text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white/50 transition shadow-lg text-sm sm:text-base">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-4 text-gray-300 text-lg"></i>
+                <div id="suggestions" class="absolute left-0 right-0 mt-2 glass rounded-2xl overflow-hidden hidden z-50 shadow-xl divide-y divide-white/10"></div>
+            </div>
 
-        <!-- Основной блок погоды -->
-        <div id="weatherContainer" class="flex flex-col gap-6">
-            <!-- Текущая погода -->
+            <!-- Основной блок погоды -->
             <div class="glass rounded-3xl p-6 shadow-2xl flex flex-col items-center text-center relative overflow-hidden">
                 <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
                 <h1 id="cityName" class="text-2xl font-bold tracking-wide">Москва</h1>
@@ -52,27 +58,30 @@
                     <div class="flex flex-col items-center bg-white/5 p-2 rounded-xl">
                         <i class="fa-solid fa-wind text-blue-200 mb-1"></i>
                         <span class="text-gray-300 text-xs">Ветер</span>
-                        <span id="windSpeed" class="font-semibold">-- км/ч</span>
+                        <span id="windSpeed" class="font-semibold text-xs sm:text-sm">-- км/ч</span>
                     </div>
                     <div class="flex flex-col items-center bg-white/5 p-2 rounded-xl">
                         <i class="fa-solid fa-droplet text-blue-200 mb-1"></i>
                         <span class="text-gray-300 text-xs">Влажность</span>
-                        <span id="humidity" class="font-semibold">--%</span>
+                        <span id="humidity" class="font-semibold text-xs sm:text-sm">--%</span>
                     </div>
                     <div class="flex flex-col items-center bg-white/5 p-2 rounded-xl">
                         <i class="fa-solid fa-gauge text-blue-200 mb-1"></i>
                         <span class="text-gray-300 text-xs">Давление</span>
-                        <span id="pressure" class="font-semibold">-- мм</span>
+                        <span id="pressure" class="font-semibold text-xs sm:text-sm">-- мм</span>
                     </div>
                 </div>
             </div>
+        </div>
 
+        <!-- Правая колонка: Почасовой прогноз и Прогноз на 7 дней -->
+        <div id="weatherContainer" class="w-full flex-1 flex flex-col gap-6">
             <!-- Прогноз по часам -->
             <div class="glass rounded-3xl p-5 shadow-xl">
                 <h3 class="text-sm font-semibold text-gray-200 mb-3 flex items-center gap-2">
                     <i class="fa-regular fa-clock"></i> Почасовой прогноз
                 </h3>
-                <div id="hourlyContainer" class="flex gap-4 overflow-x-auto pb-2 scrollbar-none"></div>
+                <div id="hourlyContainer" class="flex gap-4 overflow-x-auto pb-2 no-scrollbar"></div>
             </div>
 
             <!-- Прогноз на 7 дней -->
@@ -83,6 +92,7 @@
                 <div id="weeklyContainer" class="flex flex-col gap-2.5"></div>
             </div>
         </div>
+
     </div>
 
     <!-- Футер -->
@@ -154,9 +164,9 @@
             // Часы
             const hourlyContainer = document.getElementById('hourlyContainer');
             hourlyContainer.innerHTML = '';
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 12; i++) {
                 hourlyContainer.innerHTML += `
-                    <div class="flex flex-col items-center justify-between bg-white/5 p-3 rounded-2xl min-w-[70px] shrink-0">
+                    <div class="flex flex-col items-center justify-between bg-white/5 p-3.5 rounded-2xl min-w-[75px] shrink-0">
                         <span class="text-xs text-gray-300">${(now.getHours() + i) % 24}:00</span>
                         <i class="fa-solid ${wInfo.icon} text-xl my-2"></i>
                         <span class="font-bold text-sm">${info.temp + (i % 2)}°</span>
@@ -168,15 +178,15 @@
             const weeklyContainer = document.getElementById('weeklyContainer');
             weeklyContainer.innerHTML = '';
             const days = ['Сегодня', 'Завтра', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-            days.forEach((day, index) => {
+            days.forEach((day) => {
                 weeklyContainer.innerHTML += `
-                    <div class="flex items-center justify-between bg-white/5 px-4 py-2.5 rounded-2xl">
-                        <span class="w-24 font-medium text-sm capitalize">${day}</span>
+                    <div class="flex items-center justify-between bg-white/5 px-4 py-3 rounded-2xl">
+                        <span class="w-28 font-medium text-sm capitalize">${day}</span>
                         <div class="flex items-center gap-2">
                             <i class="fa-solid ${wInfo.icon} text-lg w-6 text-center"></i>
                             <span class="text-xs text-gray-300">${info.desc}</span>
                         </div>
-                        <div class="flex gap-2 text-sm font-semibold">
+                        <div class="flex gap-3 text-sm font-semibold">
                             <span>${info.temp + 3}°</span>
                             <span class="text-gray-400">${info.temp - 2}°</span>
                         </div>
@@ -208,7 +218,7 @@
                 const timeStr = new Date(hourly.time[i]).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                 const hInfo = getWeatherInfo(hourly.weather_code[i]);
                 hourlyContainer.innerHTML += `
-                    <div class="flex flex-col items-center justify-between bg-white/5 p-3 rounded-2xl min-w-[70px] shrink-0">
+                    <div class="flex flex-col items-center justify-between bg-white/5 p-3.5 rounded-2xl min-w-[75px] shrink-0">
                         <span class="text-xs text-gray-300">${timeStr}</span>
                         <i class="fa-solid ${hInfo.icon} text-xl my-2"></i>
                         <span class="font-bold text-sm">${Math.round(hourly.temperature_2m[i])}°</span>
@@ -224,13 +234,13 @@
                 const dayName = i === 0 ? 'Сегодня' : date.toLocaleDateString('ru-RU', { weekday: 'short' });
                 const dInfo = getWeatherInfo(daily.weather_code[i]);
                 weeklyContainer.innerHTML += `
-                    <div class="flex items-center justify-between bg-white/5 px-4 py.5 px-4 py-2.5 rounded-2xl">
-                        <span class="w-24 font-medium text-sm capitalize">${dayName}</span>
+                    <div class="flex items-center justify-between bg-white/5 px-4 py-3 rounded-2xl">
+                        <span class="w-28 font-medium text-sm capitalize">${dayName}</span>
                         <div class="flex items-center gap-2">
                             <i class="fa-solid ${dInfo.icon} text-lg w-6 text-center"></i>
                             <span class="text-xs text-gray-300">${dInfo.desc}</span>
                         </div>
-                        <div class="flex gap-2 text-sm font-semibold">
+                        <div class="flex gap-3 text-sm font-semibold">
                             <span>${Math.round(daily.temperature_2m_max[i])}°</span>
                             <span class="text-gray-400">${Math.round(daily.temperature_2m_min[i])}°</span>
                         </div>
