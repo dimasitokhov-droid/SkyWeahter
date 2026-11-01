@@ -19,29 +19,29 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        /* Скрытие скроллбара для красивого вида */
+        /* Скрытие скроллбара */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-600 via-indigo-700 to-slate-900 min-h-screen text-white p-4 sm:p-8 flex flex-col justify-between">
 
-    <!-- Главный контейнер: на ПК горизонтально (lg:flex-row), на телефоне вертикально -->
+    <!-- Главный контейнер -->
     <div class="w-full max-w-5xl mx-auto my-auto flex flex-col lg:flex-row gap-6 items-start">
         
-        <!-- Левая колонка: Поиск + Текущая погода -->
+        <!-- Левая колонка: Карточка погоды, в которую встроен поиск -->
         <div class="w-full lg:w-96 flex flex-col gap-6 shrink-0">
-            <!-- Поиск -->
-            <div class="relative">
-                <input type="text" id="citySearch" placeholder="Введите город (например, Москва)..." 
-                    class="w-full py-3.5 px-4 pl-12 rounded-2xl glass text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white/50 transition shadow-lg text-sm sm:text-base">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-4 text-gray-300 text-lg"></i>
-                <div id="suggestions" class="absolute left-0 right-0 mt-2 glass rounded-2xl overflow-hidden hidden z-50 shadow-xl divide-y divide-white/10"></div>
-            </div>
-
-            <!-- Основной блок погоды -->
             <div class="glass rounded-3xl p-6 shadow-2xl flex flex-col items-center text-center relative overflow-hidden">
                 <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <!-- Поиск встроен внутрь карточки -->
+                <div class="relative w-full mb-6">
+                    <input type="text" id="citySearch" placeholder="Поиск города..." 
+                        class="w-full py-3 px-4 pl-11 rounded-2xl bg-white/15 border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white/50 transition shadow-inner text-sm">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-300 text-sm"></i>
+                    <div id="suggestions" class="absolute left-0 right-0 mt-2 glass rounded-2xl overflow-hidden hidden z-50 shadow-xl divide-y divide-white/10 text-left"></div>
+                </div>
+
                 <h1 id="cityName" class="text-2xl font-bold tracking-wide">Москва</h1>
                 <p id="currentDate" class="text-sm text-gray-200 mt-1"></p>
                 
@@ -92,7 +92,6 @@
                 <div id="weeklyContainer" class="flex flex-col gap-2.5"></div>
             </div>
         </div>
-
     </div>
 
     <!-- Футер -->
@@ -119,7 +118,6 @@
             return map[code] || { desc: 'Облачно', icon: 'fa-cloud text-gray-300' };
         }
 
-        // Запасные демо-данные на случай блокировки сети
         const fallbackData = {
             "Москва": { temp: 4, desc: 'Переменная облачность', code: 2, wind: 5, humidity: 76, pressure: 752 },
             "Санкт-Петербург": { temp: 2, desc: 'Пасмурно', code: 3, wind: 7, humidity: 82, pressure: 748 },
@@ -141,7 +139,7 @@
 
                 updateUI(cityName, data.current, data.hourly, data.daily);
             } catch (err) {
-                console.warn('Используем резервный источник данных из-за блокировки сети');
+                console.warn('Используем резервный источник данных');
                 useFallback(cityName);
             }
         }
@@ -161,7 +159,6 @@
             document.getElementById('humidity').innerText = `${info.humidity}%`;
             document.getElementById('pressure').innerText = `${info.pressure} мм`;
 
-            // Часы
             const hourlyContainer = document.getElementById('hourlyContainer');
             hourlyContainer.innerHTML = '';
             for (let i = 0; i < 12; i++) {
@@ -174,7 +171,6 @@
                 `;
             }
 
-            // Дни
             const weeklyContainer = document.getElementById('weeklyContainer');
             weeklyContainer.innerHTML = '';
             const days = ['Сегодня', 'Завтра', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
@@ -208,7 +204,6 @@
             document.getElementById('humidity').innerText = `${cur.relative_humidity_2m}%`;
             document.getElementById('pressure').innerText = `${Math.round(cur.surface_pressure * 0.750062)} мм`;
 
-            // Почасовой
             const hourlyContainer = document.getElementById('hourlyContainer');
             hourlyContainer.innerHTML = '';
             const curIdx = hourly.time.findIndex(t => new Date(t) > now);
@@ -226,7 +221,6 @@
                 `;
             }
 
-            // Дневной
             const weeklyContainer = document.getElementById('weeklyContainer');
             weeklyContainer.innerHTML = '';
             for (let i = 0; i < daily.time.length; i++) {
@@ -249,7 +243,6 @@
             }
         }
 
-        // Поиск городов
         let searchTimeout;
         searchInput.addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
@@ -286,7 +279,6 @@
             fetchWeatherData(lat, lon, name);
         }
 
-        // Запуск для Москвы
         fetchWeatherData(55.7522, 37.6156, 'Москва');
     </script>
 </body>
